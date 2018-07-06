@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/angular-1.5.8.js"></script>
+    <style>
+        table tr th,table tr td{
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+   <div ng-app="app" ng-controller="myCtrl">
+       <table cellspacing="0">
+           <tr>
+               <th>id</th>
+               <th>name</th>
+               <th>age</th>
+               <th></th>
+           </tr>
+           <tr ng-repeat="a in dataList">
+               <td>{{a.id}}</td>
+               <td>{{a.name}}</td>
+               <td>{{a.age}}</td>
+               <td><button ng-click="delUser(a.id);">删除</button></td>
+           </tr>
+           <tr>
+               <td></td>
+               <td><input type="text" ng-model="user.name"></td>
+               <td><input type="text" ng-model="user.age"></td>
+               <td><button ng-click="addUser(user);">添加</button></td>
+           </tr>
+       </table>
+   </div>
+</body>
+<script>
+    angular.module('app',[]).controller('myCtrl',['$scope','$http',function ($scope,$http) {
+        $scope.getData = function () {
+            $http.get('/p/users/queryAll').success(function (data) {
+                console.log(data);
+                $scope.dataList = data;
+            });
+        };
+        $scope.getData();
+
+        $scope.addUser = function (user) {
+          $http.get('/p/users/addUser?name='+user.name+'&age='+user.age).success(function () {
+              $scope.user = {};
+              $scope.getData();
+              alert('添加成功')
+          });
+        };
+
+        $scope.delUser = function (id) {
+            $http.get('/p/users/deleteUser?id='+id).success(function () {
+                $scope.getData();
+                alert('删除成功')
+            });
+        };
+    }]);
+</script>
+</html>
